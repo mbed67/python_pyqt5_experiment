@@ -22,12 +22,16 @@ class CentralWidget(QtWidgets.QWidget):
         self.rest_phrases_qlv = QtWidgets.QTableView()
         self.rest_phrases_qlv.setModel(self.rest_model)
 
+        self.edit_texts_qpb = QtWidgets.QPushButton('edit')
+        self.edit_texts_qpb.clicked.connect(self.on_edit_texts_clicked)
+
+
         # this one also uses the rest_model but is used as a form.
-        self.active_breathing_phrase_qgb = EditBreathingPhrase(self.rest_model)
+        self.edit_breathing_phrase_qgb = EditBreathingPhrase(self.rest_model)
 
         self.panel_1 = QtWidgets.QVBoxLayout()
-        self.panel_1.addWidget(self.active_breathing_phrase_qgb)
         self.panel_1.addWidget(self.test_qlv)
+        self.panel_1.addWidget(self.edit_texts_qpb)
         self.panel_1.addStretch(1)
         self.panel_2 = QtWidgets.QVBoxLayout()
         self.panel_2.addWidget(self.breathing_phrases_qlv)
@@ -41,6 +45,10 @@ class CentralWidget(QtWidgets.QWidget):
         self.main_container_hbox_l3.addLayout(self.panel_2)
         self.main_container_hbox_l3.addLayout(self.panel_3)
         self.setLayout(self.main_container_hbox_l3)
+
+    def on_edit_texts_clicked(self):
+        self.edit_breathing_phrase_qgb.show()
+        self.edit_breathing_phrase_qgb.mapper.setCurrentIndex(self.test_qlv.selectedIndexes()[0].row())
 
 
 class EditBreathingPhrase(QtWidgets.QWidget):
