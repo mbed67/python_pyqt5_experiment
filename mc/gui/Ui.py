@@ -11,7 +11,6 @@ class CentralWidget(QtWidgets.QWidget):
         # Initialize the models
         self.breathing_model = breathing_model
         self.rest_model = rest_model
-        self.rest_model.refresh()
 
         self.breathing_phrases_qlv = QtWidgets.QListView()
         self.breathing_phrases_qlv.setModel(self.breathing_model)
@@ -19,11 +18,11 @@ class CentralWidget(QtWidgets.QWidget):
         # now two views that share the same model. As you edit a cell in one of them, the others are updated.
         self.test_qlv = QtWidgets.QListView()
         self.test_qlv.setModel(self.rest_model)
+        self.test_qlv.setModelColumn(2)
         self.rest_phrases_qlv = QtWidgets.QTableView()
         self.rest_phrases_qlv.setModel(self.rest_model)
 
-        # this one also uses the rest_model but is used as a form. It still has issues saving all the fields
-        # currently only the first field is saved
+        # this one also uses the rest_model but is used as a form.
         self.active_breathing_phrase_qgb = EditBreathingPhrase(self.rest_model)
 
         self.panel_1 = QtWidgets.QVBoxLayout()
@@ -32,10 +31,10 @@ class CentralWidget(QtWidgets.QWidget):
         self.panel_1.addStretch(1)
         self.panel_2 = QtWidgets.QVBoxLayout()
         self.panel_2.addWidget(self.breathing_phrases_qlv)
-        self.panel_1.addStretch(1)
+        self.panel_2.addStretch(1)
         self.panel_3 = QtWidgets.QVBoxLayout()
         self.panel_3.addWidget(self.rest_phrases_qlv)
-        self.panel_1.addStretch(1)
+        self.panel_3.addStretch(1)
 
         self.main_container_hbox_l3 = QtWidgets.QHBoxLayout()
         self.main_container_hbox_l3.addLayout(self.panel_1)
@@ -75,11 +74,11 @@ class EditBreathingPhrase(QtWidgets.QWidget):
         # Set up the mapper.
         self.mapper = QtWidgets.QDataWidgetMapper(self)
         self.mapper.setModel(self.model)
-        self.mapper.addMapping(self.title_edit, 0)
-        self.mapper.addMapping(self.ib_phrase_edit, 2)
-        self.mapper.addMapping(self.ob_phrase_edit, 3)
-        self.mapper.addMapping(self.ib_short_phrase_edit, 4)
-        self.mapper.addMapping(self.ob_short_phrase_edit, 5)
+        self.mapper.addMapping(self.title_edit, 2)
+        self.mapper.addMapping(self.ib_phrase_edit, 3)
+        self.mapper.addMapping(self.ob_phrase_edit, 4)
+        self.mapper.addMapping(self.ib_short_phrase_edit, 5)
+        self.mapper.addMapping(self.ob_short_phrase_edit, 6)
         self.mapper.setSubmitPolicy(QtWidgets.QDataWidgetMapper.ManualSubmit)
         self.cancel_button.clicked.connect(self.close)
         self.submit_button.clicked.connect(self._submit_form)
@@ -102,10 +101,5 @@ class EditBreathingPhrase(QtWidgets.QWidget):
         self.mapper.toFirst()
 
     def _submit_form(self):
-        # This seems to save only the first item... strange...
-        # The documentation says the following:
-        # For every mapped section, the item delegate reads the current value from the widget and sets it in the model.
-        # Finally, the model's submit() method is invoked.
-        # http://doc.qt.io/archives/qt-4.8/qdatawidgetmapper.html
         self.mapper.submit()
         self.close()

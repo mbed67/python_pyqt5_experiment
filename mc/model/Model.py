@@ -1,5 +1,5 @@
 from PyQt5 import QtCore
-from PyQt5.QtSql import QSqlQuery, QSqlQueryModel
+from PyQt5.QtSql import QSqlTableModel
 
 
 class BreathingModel(QtCore.QAbstractListModel):
@@ -62,57 +62,11 @@ class BreathingModel(QtCore.QAbstractListModel):
         return True
 
 
-class RestModel(QSqlQueryModel):
+class RestModel(QSqlTableModel):
     """
     This model is coupled with a db
     """
-    def flags(self, index):
-        flags = super(RestModel, self).flags(index)
-
-        if index.column() in (0, 2, 3, 4, 5):
-            flags |= QtCore.Qt.ItemIsEditable
-
-        return flags
-
-    def setData(self, index, value, role):
-        if index.column() not in (0, 2, 3, 4, 5):
-            return False
-
-        primaryKeyIndex = self.index(index.row(), 1)
-        id = self.data(primaryKeyIndex)
-
-        self.clear()
-
-        column = {
-            '0': 'title',
-            '2': 'ib_phrase',
-            '3': 'ob_phrase',
-            '4': 'ib_short_phrase',
-            '5': 'ob_short_phrase',
-        }
-
-        print(column.get(str(index.column())))
-        print(value)
-
-        ok = self.update_table(id, column.get(str(index.column())), value)
-
-        self.refresh()
-
-        return ok
-
-    def refresh(self):
-        self.setQuery('select title, id, ib_phrase, ob_phrase, ib_short_phrase, ob_short_phrase from phrases')
-        self.setHeaderData(0, QtCore.Qt.Horizontal, "Title")
-        self.setHeaderData(1, QtCore.Qt.Horizontal, "Id")
-        self.setHeaderData(2, QtCore.Qt.Horizontal, "In breath")
-        self.setHeaderData(3, QtCore.Qt.Horizontal, "Out breath")
-        self.setHeaderData(4, QtCore.Qt.Horizontal, "In short")
-        self.setHeaderData(5, QtCore.Qt.Horizontal, "Out short")
-        return True
-
-    def update_table(self, id, column, value):
-        query = QSqlQuery()
-        query.prepare('update phrases set ' + column + ' = ? where id = ?')
-        query.addBindValue(value)
-        query.addBindValue(id)
-        return query.exec_()
+    def __init__(self):
+        QSqlTableModel.__init__(self)
+        self.setTable('phrases')
+        self.select()
