@@ -56,7 +56,7 @@ def get_db_connection():
         return False
 
     query = QSqlQuery()
-    query.exec_("create table phrases(id int primary key, "
+    query.exec_("create table phrases(id integer primary key autoincrement, "
                 "vertical_order integer not null,"
                 "title text not null,"
                 "ib_phrase text not null,"

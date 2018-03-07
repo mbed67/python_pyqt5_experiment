@@ -1,5 +1,5 @@
 from PyQt5 import QtCore
-from PyQt5.QtSql import QSqlTableModel
+from PyQt5.QtSql import QSqlTableModel, QSqlQuery
 
 
 class BreathingModel(QtCore.QAbstractListModel):
