@@ -56,6 +56,8 @@ def get_db_connection():
         return False
 
     query = QSqlQuery()
+
+    # create and populate phrases table
     query.exec_("create table phrases(id integer primary key autoincrement, "
                 "vertical_order integer not null,"
                 "title text not null,"
@@ -65,6 +67,15 @@ def get_db_connection():
                 "ob_short_phrase text not null default '')")
     query.exec_("insert into phrases values(1, 1, 'In, Out', 'Breathing in', 'Breathing out', 'In', 'Out')")
     query.exec_("insert into phrases values(2, 2, 'Deep, Slow', 'Breathing deep', 'Breathing slow', 'Deep', 'Slow')")
+
+    # create and populate rest_actions table
+    query.exec_("create table rest_actions(id integer primary key autoincrement, "
+                "vertical_order integer not null,"
+                "title text not null,"
+                "image_path text not null default '')")
+    query.exec_("insert into rest_actions values(1, 1, 'Making a cup of tea'")
+    query.exec_("insert into rest_actions values(2, 2, 'Walking meditation inside'")
+
     db.commit()
 
     return True

@@ -2,7 +2,7 @@
 import logging
 import os
 import sys
-from PyQt5 import Qt, QtWidgets
+from PyQt5 import Qt, QtWidgets, QtCore
 from mc.model.Model import *
 from mc.gui.main_win import MainWin
 from mc import mc_global
@@ -12,7 +12,7 @@ import mc.db
 class App(Qt.QApplication):
     def __init__(self, sys_argv):
         super(App, self).__init__(sys_argv)
-        self.breathing_model = BreathingModel(["one", "two", "three", "four", "five"])
+        self.breathing_model = BreathingModel()
         self.rest_model = RestModel()
 
         self.main_view = MainWin(self.breathing_model, self.rest_model)
