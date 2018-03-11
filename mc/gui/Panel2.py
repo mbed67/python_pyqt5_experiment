@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets, QtGui
+from PyQt5 import QtWidgets, QtGui, QtCore
 
 
 class Panel2(QtWidgets.QVBoxLayout):
@@ -45,7 +45,9 @@ class Panel2(QtWidgets.QVBoxLayout):
 
     def on_add_phrase_clicked(self):
         row_nr = self.breathing_model.rowCount()
+        vertical_order = self.breathing_model.max_vertical_order_breathing_phrases() + 1
         self.breathing_model.insertRow(row_nr)
+        self.edit_breathing_phrase.vertical_order.setText(str(vertical_order))
         self.edit_breathing_phrase.mapper.toLast()
         self.edit_breathing_phrase.show()
 
@@ -69,13 +71,10 @@ class EditBreathingPhrase(QtWidgets.QWidget):
 
         self.model = model
         self.mapper = QtWidgets.QDataWidgetMapper(self)
+        self.vertical_order = QtWidgets.QLineEdit()
         self._init_ui()
 
     def _init_ui(self):
-        vertical_order_label = QtWidgets.QLabel("Vertical order:")
-        vertical_order_edit = QtWidgets.QLineEdit()
-        vertical_order_edit.setValidator(QtGui.QIntValidator())
-
         title_label = QtWidgets.QLabel("Title:")
         title_edit = QtWidgets.QLineEdit()
 
@@ -98,7 +97,7 @@ class EditBreathingPhrase(QtWidgets.QWidget):
         submit_button.clicked.connect(self._submit_form)
 
         self.mapper.setModel(self.model)
-        self.mapper.addMapping(vertical_order_edit, 1)
+        self.mapper.addMapping(self.vertical_order, 1)
         self.mapper.addMapping(title_edit, 2)
         self.mapper.addMapping(ib_phrase_edit, 3)
         self.mapper.addMapping(ob_phrase_edit, 4)
@@ -107,24 +106,23 @@ class EditBreathingPhrase(QtWidgets.QWidget):
         self.mapper.setSubmitPolicy(QtWidgets.QDataWidgetMapper.ManualSubmit)
 
         layout = QtWidgets.QGridLayout()
-        layout.addWidget(vertical_order_label, 0, 0, 1, 1)
-        layout.addWidget(vertical_order_edit, 0, 1, 1, 1)
-        layout.addWidget(title_label, 1, 0, 1, 1)
-        layout.addWidget(title_edit, 1, 1, 1, 1)
-        layout.addWidget(ib_phrase_label, 2, 0, 1, 1)
-        layout.addWidget(ib_phrase_edit, 2, 1, 1, 1)
-        layout.addWidget(ob_phrase_label, 3, 0, 1, 1)
-        layout.addWidget(ob_phrase_edit, 3, 1, 1, 1)
-        layout.addWidget(ib_short_phrase_label, 4, 0, 1, 1)
-        layout.addWidget(ib_short_phrase_edit, 4, 1, 1, 1)
-        layout.addWidget(ob_short_phrase_label, 5, 0, 1, 1)
-        layout.addWidget(ob_short_phrase_edit, 5, 1, 1, 1)
-        layout.addWidget(cancel_button, 6, 0, 1, 1)
-        layout.addWidget(submit_button, 6, 1, 1, 1)
+        layout.addWidget(title_label, 0, 0, 1, 1)
+        layout.addWidget(title_edit, 0, 1, 1, 1)
+        layout.addWidget(ib_phrase_label, 1, 0, 1, 1)
+        layout.addWidget(ib_phrase_edit, 1, 1, 1, 1)
+        layout.addWidget(ob_phrase_label, 2, 0, 1, 1)
+        layout.addWidget(ob_phrase_edit, 2, 1, 1, 1)
+        layout.addWidget(ib_short_phrase_label, 3, 0, 1, 1)
+        layout.addWidget(ib_short_phrase_edit, 3, 1, 1, 1)
+        layout.addWidget(ob_short_phrase_label, 4, 0, 1, 1)
+        layout.addWidget(ob_short_phrase_edit, 4, 1, 1, 1)
+        layout.addWidget(cancel_button, 5, 0, 1, 1)
+        layout.addWidget(submit_button, 5, 1, 1, 1)
         self.setLayout(layout)
 
         self.mapper.toFirst()
 
     def _submit_form(self):
         self.mapper.submit()
+        print(self.model.lastError().text())
         self.close()

@@ -47,7 +47,9 @@ class Panel3(QtWidgets.QVBoxLayout):
 
     def on_add_phrase_clicked(self):
         row_nr = self.rest_model.rowCount()
+        vertical_order = self.rest_model.max_vertical_order_breathing_phrases() + 1
         self.rest_model.insertRow(row_nr)
+        self.edit_rest_phrase.vertical_order.setText(str(vertical_order))
         self.edit_rest_phrase.mapper.toLast()
         self.edit_rest_phrase.show()
 
@@ -66,13 +68,10 @@ class EditRestPhrase(QtWidgets.QWidget):
 
         self.model = model
         self.mapper = QtWidgets.QDataWidgetMapper(self)
+        self.vertical_order = QtWidgets.QLineEdit()
         self._init_ui()
 
     def _init_ui(self):
-        vertical_order_label = QtWidgets.QLabel("Vertical order:")
-        vertical_order_edit = QtWidgets.QLineEdit()
-        vertical_order_edit.setValidator(QtGui.QIntValidator())
-
         title_label = QtWidgets.QLabel("Title:")
         title_edit = QtWidgets.QLineEdit()
 
@@ -86,20 +85,18 @@ class EditRestPhrase(QtWidgets.QWidget):
         submit_button.clicked.connect(self._submit_form)
 
         self.mapper.setModel(self.model)
-        self.mapper.addMapping(vertical_order_edit, 1)
+        self.mapper.addMapping(self.vertical_order, 1)
         self.mapper.addMapping(title_edit, 2)
         self.mapper.addMapping(image_path_edit, 3)
         self.mapper.setSubmitPolicy(QtWidgets.QDataWidgetMapper.ManualSubmit)
 
         layout = QtWidgets.QGridLayout()
-        layout.addWidget(vertical_order_label, 0, 0, 1, 1)
-        layout.addWidget(vertical_order_edit, 0, 1, 1, 1)
-        layout.addWidget(title_label, 1, 0, 1, 1)
-        layout.addWidget(title_edit, 1, 1, 1, 1)
-        layout.addWidget(image_path_label, 2, 0, 1, 1)
-        layout.addWidget(image_path_edit, 2, 1, 1, 1)
-        layout.addWidget(cancel_button, 3, 0, 1, 1)
-        layout.addWidget(submit_button, 3, 1, 1, 1)
+        layout.addWidget(title_label, 0, 0, 1, 1)
+        layout.addWidget(title_edit, 0, 1, 1, 1)
+        layout.addWidget(image_path_label, 1, 0, 1, 1)
+        layout.addWidget(image_path_edit, 1, 1, 1, 1)
+        layout.addWidget(cancel_button, 2, 0, 1, 1)
+        layout.addWidget(submit_button, 2, 1, 1, 1)
         self.setLayout(layout)
 
         self.mapper.toFirst()
