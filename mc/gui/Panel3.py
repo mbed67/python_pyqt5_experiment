@@ -1,4 +1,5 @@
 from PyQt5 import QtWidgets, QtGui
+from mc.gui.ListViewButtons import ListViewButtons
 
 
 class Panel3(QtWidgets.QVBoxLayout):
@@ -8,55 +9,16 @@ class Panel3(QtWidgets.QVBoxLayout):
         self.rest_model = model
         self.rest_phrases_qlv = list_view
         self.edit_rest_phrase = EditRestPhrase(self.rest_model)
+        self.button_box = ListViewButtons(self.rest_model, self.rest_phrases_qlv, self.edit_rest_phrase)
         self._init_ui()
 
     def _init_ui(self):
         self.rest_phrases_qlv.setModel(self.rest_model)
         self.rest_phrases_qlv.setModelColumn(2)
-        self.rest_phrases_qlv.doubleClicked.connect(self.on_edit_rest_phrase_clicked)
-
-        edit_rest_phrase_qpb = QtWidgets.QPushButton('edit')
-        edit_rest_phrase_qpb.clicked.connect(self.on_edit_rest_phrase_clicked)
-
-        add_rest_phrase_qpb = QtWidgets.QPushButton('add')
-        add_rest_phrase_qpb.clicked.connect(self.on_add_phrase_clicked)
-
-        remove_rest_phrase_qpb = QtWidgets.QPushButton('remove')
-        remove_rest_phrase_qpb.clicked.connect(self.on_remove_phrase_clicked)
-
-        button_box_rest_phrases = QtWidgets.QHBoxLayout()
-        button_box_rest_phrases.addWidget(edit_rest_phrase_qpb)
-        button_box_rest_phrases.addWidget(add_rest_phrase_qpb)
-        button_box_rest_phrases.addWidget(remove_rest_phrase_qpb)
 
         self.addWidget(self.rest_phrases_qlv)
-        self.addLayout(button_box_rest_phrases)
+        self.addLayout(self.button_box)
         self.addStretch(1)
-
-        self.rest_phrases_qlv.setModel(self.rest_model)
-        self.rest_phrases_qlv.setModelColumn(2)
-        self.rest_phrases_qlv.doubleClicked.connect(self.on_edit_rest_phrase_clicked)
-
-    def on_edit_rest_phrase_clicked(self):
-        self.edit_rest_phrase.show()
-
-        if self.rest_phrases_qlv.selectedIndexes():
-            self.edit_rest_phrase.mapper.setCurrentIndex(self.rest_phrases_qlv.selectedIndexes()[0].row())
-        else:
-            self.on_add_phrase_clicked()
-
-    def on_add_phrase_clicked(self):
-        row_nr = self.rest_model.rowCount()
-        vertical_order = self.rest_model.max_vertical_order_breathing_phrases() + 1
-        self.rest_model.insertRow(row_nr)
-        self.edit_rest_phrase.vertical_order.setText(str(vertical_order))
-        self.edit_rest_phrase.mapper.toLast()
-        self.edit_rest_phrase.show()
-
-    def on_remove_phrase_clicked(self):
-        if self.rest_phrases_qlv.selectedIndexes():
-            self.rest_model.removeRow(self.rest_phrases_qlv.selectedIndexes()[0].row())
-            self.rest_model.select()
 
 
 class EditRestPhrase(QtWidgets.QWidget):
