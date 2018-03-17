@@ -1,4 +1,5 @@
-from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt5 import QtWidgets
+from mc.mc_global import MoveDirectionEnum
 
 
 class Panel2(QtWidgets.QVBoxLayout):
@@ -21,10 +22,18 @@ class Panel2(QtWidgets.QVBoxLayout):
         remove_breathing_phrase_qpb = QtWidgets.QPushButton('remove')
         remove_breathing_phrase_qpb.clicked.connect(self.on_remove_phrase_clicked)
 
+        move_breathing_phrase_up_qpb = QtWidgets.QPushButton('up')
+        move_breathing_phrase_up_qpb.clicked.connect(self.on_move_phrase_up_clicked)
+
+        move_breathing_phrase_down_qpb = QtWidgets.QPushButton('down')
+        move_breathing_phrase_down_qpb.clicked.connect(self.on_move_phrase_down_clicked)
+
         button_box_breathing_phrases = QtWidgets.QHBoxLayout()
         button_box_breathing_phrases.addWidget(edit_breathing_phrase_qpb)
         button_box_breathing_phrases.addWidget(add_breathing_phrase_qpb)
         button_box_breathing_phrases.addWidget(remove_breathing_phrase_qpb)
+        button_box_breathing_phrases.addWidget(move_breathing_phrase_up_qpb)
+        button_box_breathing_phrases.addWidget(move_breathing_phrase_down_qpb)
 
         self.addWidget(self.breathing_phrases_qlv)
         self.addLayout(button_box_breathing_phrases)
@@ -45,7 +54,7 @@ class Panel2(QtWidgets.QVBoxLayout):
 
     def on_add_phrase_clicked(self):
         row_nr = self.breathing_model.rowCount()
-        vertical_order = self.breathing_model.max_vertical_order_breathing_phrases() + 1
+        vertical_order = row_nr + 1
         self.breathing_model.insertRow(row_nr)
         self.edit_breathing_phrase.vertical_order.setText(str(vertical_order))
         self.edit_breathing_phrase.mapper.toLast()
@@ -60,6 +69,36 @@ class Panel2(QtWidgets.QVBoxLayout):
     def on_breathing_phrase_clicked(self):
         if self.breathing_phrases_qlv.selectedIndexes():
             self.active_breathing_phrase_qlv.set_active_phrase(self.breathing_phrases_qlv.selectedIndexes())
+
+    def on_move_phrase_up_clicked(self):
+        current_index = self.breathing_phrases_qlv.currentIndex()
+        if current_index != -1:
+            self._move_up_or_down(current_index, MoveDirectionEnum.up)
+            self.breathing_phrases_qlv.setCurrentIndex(
+                current_index.sibling(current_index.row() - 1, current_index.column())
+                if current_index.row() != 0
+                else current_index
+            )
+
+    def on_move_phrase_down_clicked(self):
+        current_index = self.breathing_phrases_qlv.currentIndex()
+        if current_index != -1:
+            self._move_up_or_down(current_index, MoveDirectionEnum.down)
+            self.breathing_phrases_qlv.setCurrentIndex(
+                current_index.sibling(current_index.row() + 1, current_index.column())
+                if current_index.row() != current_index.model().rowCount() - 1
+                else current_index
+            )
+
+    def _move_up_or_down(self, current_index, direction):
+        old_vertical_order = current_index.sibling(current_index.row(), 1).data()
+        new_vertical_order = old_vertical_order + direction.value
+        row_to_swap = current_index.row() + direction.value
+        self.breathing_model.setData(current_index.sibling(current_index.row(), 1), new_vertical_order)
+        self.breathing_model.submitAll()
+        self.breathing_model.setData(current_index.sibling(row_to_swap, 1), old_vertical_order)
+        self.breathing_model.submitAll()
+        self.breathing_model.select()
 
 
 class EditBreathingPhrase(QtWidgets.QWidget):

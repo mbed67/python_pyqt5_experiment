@@ -79,6 +79,11 @@ class BreathingVisType(enum.Enum):
     popup_dialog = 1
 
 
+class MoveDirectionEnum(enum.Enum):
+    up = -1
+    down = 1
+
+
 def get_base_dir() -> str:
     base_dir_str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     # -__file__ is the file that was started, in other words mindfulness-at-the-computer.py
@@ -192,29 +197,9 @@ def get_html(i_text: str) -> str:
     return ret_str
 
 
-class EventSource(enum.Enum):
-    undefined = 0
-    rest_action_changed = 11
-    rest_list_selection_changed = 12
-    breathing_list_phrase_updated = 21
-    breathing_list_selection_changed = 22
-    rest_settings_changed = 31
-    rest_slider_value_changed = 34
-    breathing_settings_changed = 4
-    rest_opened = 5
-    rest_closed = 6
-
-
 db_upgrade_message_str = None
 
 
 sys_info_telist = []
 
 
-def clear_widget_and_layout_children(qlayout_or_qwidget) -> None:
-    if qlayout_or_qwidget.widget():
-        qlayout_or_qwidget.widget().deleteLater()
-    elif qlayout_or_qwidget.layout():
-        while qlayout_or_qwidget.layout().count():
-            child_qlayoutitem = qlayout_or_qwidget.takeAt(0)
-            clear_widget_and_layout_children(child_qlayoutitem)  # Recursive call
